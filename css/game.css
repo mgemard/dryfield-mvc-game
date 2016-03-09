@@ -1,3 +1,35 @@
-body {
-    font-size:20px;
+.game-info-flex-container {
+    display: -webkit-flex;
+    display: flex;
+    width: 760px;
+    height: 50px;
+}
+
+.game-info-flex-item {
+    width: 190px;
+    height: 100px;
+    margin: 10px;
+    padding:10px;
+}
+
+.fields-flex-container {
+    flux-direction:row;
+    display: -webkit-flex;
+    display: flex;
+    width: 560px;
+    height: 150px;
+    background-color: lightgrey;
+
+}
+
+.fields-flex-item {
+    background-color: cornflowerblue;
+    width: 140px;
+    height: 100px;
+    margin: 10px;
+    padding:10px;
+}
+
+button {
+    margin:10px;
 }

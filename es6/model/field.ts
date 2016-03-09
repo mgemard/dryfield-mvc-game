@@ -1,14 +1,34 @@
-class Champ {
-    litreCiterne: number = 3;
-    constructor() {
+import Citerne from "./citerne.ts";
 
+class Field {
+    citerne: Citerne;
+    recolte: number;
+    maxRecolte: number = 20;
+    constructor() {
+        this.recolte = 0;
+        this.citerne = new Citerne();
     }
-    remplir(qty: number) {
-        this.litreCiterne = this.litreCiterne + qty;
+    pousser(): void {
+        if (this.citerne.litreCiterne == 0) {
+            this.recolte = 0;
+        }
+        else if(this.recolte < this.maxRecolte ) {
+            this.recolte++;
+        }
+    }
+    recolter(): boolean {
+        if(this.recolte == 20 ) {
+            this.recolte = 0;
+            return true;
+        }
+        return false;
+    }
+    remplir(qty: number): number {
+        return this.citerne.remplir(qty);
     }
     vider(qty: number) {
-        this.litreCiterne = this.litreCiterne + qty;
+        this.citerne.vider(qty);
     }
 }
 
-export default Champ;
+export default Field;

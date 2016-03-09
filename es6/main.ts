@@ -16,7 +16,7 @@ viewGame.addObserver(controller);
 viewStat.addObserver(controller);
 
 modelGame.addObserver(viewGame);
-modelStat.addObserver(viewStat);
 
 // we show the game view
 viewGame.update();
+

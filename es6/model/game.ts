@@ -2,28 +2,45 @@ import Observable from './../observable/observable.ts';
 import Field from './field.ts'
 import Observer from "../observer/observer";
 
-class ModelGame implements Observable {
 
-    litreReserve: number = 3; // litre
-    nbRecolte: number = 0;
+class ModelGame implements Observable {
+    litreReserve: number; // litre
+    nbRecolte: number;
     fields: Field[] = new Array(3);
-    conso: number = 1; // litre per second
-    argent: number = 50; // dollar
-    prixEau: number = 1; //dollar per litre
-    prixRecolte: number = 40; // dollar
+    conso: number; // litre per second
+    consoMax: number;
+    dollar: number; // dollar
+    prixEau: number; //dollar per litre
+    prixRecolte: number; // dollar
     timer;
+    running: boolean = false;
+    gameOver: boolean = true;
+
+    qtyIrrigation: number = 3; // litre per irrigation
+    qtyAchat: number = Infinity; // litre per buy
 
     listObserver: Observer[];
 
     constructor() {
         this.listObserver = [];
         // creation of fields
-        for (let field of this.fields) {
-            field = new Field();
+        this.init();
+    }
+    init(): void {
+        this.litreReserve = 3;
+        this.nbRecolte = 0;
+        for (let i = 0; i < 3; i++){
+            this.fields[i] = new Field();
         }
-
+        this.conso = 1
+        this.dollar = 50;
+        this.prixEau = 1;
+        this.prixRecolte = 40;
     }
     start():void {
+        this.init();
+        this.gameOver = false;
+        this.running = true;
         this.timer = setInterval(
             () => {
                 this.loop();
@@ -31,10 +48,62 @@ class ModelGame implements Observable {
             , 1000);
     }
     loop():void {
-        this.nbRecolte += 1;
+        console.log(this.conso);
+        //this.conso = Math.min(this.conso+0.01, this.consoMax);
+        this.conso += 0.01;
+        if (this.conso > this.consoMax) {
+            this.conso = this.consoMax;
+        }
+        console.log(this.conso);
+        this.gameOver = true;
+        for (let i = 0; i < 3; i++){
+            if (this.fields[i].recolte != 20) {
+                this.fields[i].vider(this.conso);
+                this.fields[i].pousser();
+            }
+            if (this.fields[i].citerne.litreCiterne != 0
+                && this.gameOver) {
+                this.gameOver = false;
+            }
+        }
+        this.notifyObserver("");
+        if (this.gameOver) {
+            this.stop();
+            this.running = false;
+            $.ajax( { url: "https://api.mlab.com/api/1/databases/dry-field/collections/scorel?apiKey=ZS6ORNaAE68ltLTbcVrrF4xyCAn5oqCw",
+                data: JSON.stringify( [ { "x" : 1 }, { "x" : 2 }, { "x" : 3 } ] ),
+                type: "POST",
+                contentType: "application/json" } );
+        }
+
+
+    }
+    irriger(field: number):void {
+        var qtyMax = Math.min(this.qtyIrrigation, this.litreReserve);
+        var qtyRemplie = this.fields[field].remplir(qtyMax);
+        this.litreReserve -= qtyRemplie;
         this.notifyObserver("");
     }
+    recolter(field: number):void {
+        var recolte = this.fields[field].recolter();
+        if (recolte) {
+            this.nbRecolte++;
+            this.dollar += 40;
+            this.notifyObserver("");
+        }
+
+    }
+    buy():void {
+        var qtyMax = Math.min(this.dollar/this.prixEau, this.qtyAchat);
+        if (qtyMax !=0) {
+            this.litreReserve += qtyMax;
+            this.dollar -= qtyMax * this.prixEau;
+            this.notifyObserver("");
+        }
+
+    }
     stop():void {
+        this.running = false;
         clearInterval(this.timer);
     }
     addObserver(obs: Observer):void {

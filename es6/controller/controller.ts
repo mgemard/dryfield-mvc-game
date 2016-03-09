@@ -23,11 +23,44 @@ class Controler implements Observer{
     }
     update(state: string):void {
         switch(state) {
-            case "start":
-                this.modelGame.start();
-                break;
-            case "stop":
+            case "jouer":
                 //code block
+                this.modelGame.addObserver(this.viewGame);
+                this.modelStat.removeObserver(this.viewStat);
+                this.viewGame.update();
+                break;
+            case "scores":
+                //code block
+                this.modelGame.removeObserver(this.viewGame);
+                this.modelStat.addObserver(this.viewStat);
+                this.viewStat.update();
+                break;
+            case "start":
+                if (!this.modelGame.running) {
+                    this.modelGame.start();
+                    this.viewGame.update();
+                }
+                break;
+            case "irriger0":
+                if (this.modelGame.running) this.modelGame.irriger(0);
+                break;
+            case "recolter0":
+                if (this.modelGame.running) this.modelGame.recolter(0);
+                break;
+            case "irriger1":
+                if (this.modelGame.running) this.modelGame.irriger(1);
+                break;
+            case "recolter1":
+                if (this.modelGame.running) this.modelGame.recolter(1);
+                break;
+            case "irriger2":
+                if (this.modelGame.running) this.modelGame.irriger(2);
+                break;
+            case "recolter2":
+                if (this.modelGame.running) this.modelGame.recolter(2);
+                break;
+            case "buy":
+                if (this.modelGame.running) this.modelGame.buy();
                 break;
             default:
             //default code block
