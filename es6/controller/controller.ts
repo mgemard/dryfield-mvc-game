@@ -21,19 +21,24 @@ class Controler implements Observer{
     start() {
         this.modelGame.start();
     }
-    update(state: string):void {
+    update(state):void {
         switch(state) {
+            case "name":
+                this.modelGame.changeName(this.viewGame.name);
+                break;
             case "jouer":
-                //code block
                 this.modelGame.addObserver(this.viewGame);
                 this.modelStat.removeObserver(this.viewStat);
                 this.viewGame.update();
                 break;
             case "scores":
-                //code block
                 this.modelGame.removeObserver(this.viewGame);
                 this.modelStat.addObserver(this.viewStat);
-                this.viewStat.update();
+                this.modelStat.fetchScore();
+                this.viewStat.update("");
+                break;
+            case "refresh":
+                this.modelStat.fetchScore();
                 break;
             case "start":
                 if (!this.modelGame.running) {

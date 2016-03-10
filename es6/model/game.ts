@@ -2,7 +2,6 @@ import Observable from './../observable/observable.ts';
 import Field from './field.ts'
 import Observer from "../observer/observer";
 
-
 class ModelGame implements Observable {
     litreReserve: number; // litre
     nbRecolte: number;
@@ -15,6 +14,8 @@ class ModelGame implements Observable {
     timer;
     running: boolean = false;
     gameOver: boolean = true;
+
+    name: string = "Player";
 
     qtyIrrigation: number = 3; // litre per irrigation
     qtyAchat: number = Infinity; // litre per buy
@@ -69,14 +70,22 @@ class ModelGame implements Observable {
         this.notifyObserver("");
         if (this.gameOver) {
             this.stop();
-            this.running = false;
-            $.ajax( { url: "https://api.mlab.com/api/1/databases/dry-field/collections/scorel?apiKey=ZS6ORNaAE68ltLTbcVrrF4xyCAn5oqCw",
-                data: JSON.stringify( [ { "x" : 1 }, { "x" : 2 }, { "x" : 3 } ] ),
-                type: "POST",
-                contentType: "application/json" } );
+            this.running =  false;
+
+            var request = new XMLHttpRequest();
+            request.open('POST', 'http://10.1.2.253:8080/data/score', true);
+            request.onreadystatechange = function () {
+                if (request.readyState == 4) {
+                    console.log("sent");
+                }
+            };
+            request.setRequestHeader('Content-Type', "application/json;charset=UTF-8");
+            request.send(JSON.stringify( { "player" : this.name, "score": this.nbRecolte } ));
         }
-
-
+    }
+    changeName(name: string):void {
+        this.name = name;
+        console.log(this.name);
     }
     irriger(field: number):void {
         var qtyMax = Math.min(this.qtyIrrigation, this.litreReserve);
@@ -91,7 +100,6 @@ class ModelGame implements Observable {
             this.dollar += 40;
             this.notifyObserver("");
         }
-
     }
     buy():void {
         var qtyMax = Math.min(this.dollar/this.prixEau, this.qtyAchat);
@@ -100,7 +108,6 @@ class ModelGame implements Observable {
             this.dollar -= qtyMax * this.prixEau;
             this.notifyObserver("");
         }
-
     }
     stop():void {
         this.running = false;
@@ -120,4 +127,3 @@ class ModelGame implements Observable {
 }
 
 export default ModelGame;
-

@@ -10,10 +10,12 @@ class ViewGame implements Observer, Observable {
 
     listObserver:Observer[];
     model: ModelGame;
+    name: string;
 
     constructor(model) {
         this.listObserver = [];
         this.model = model;
+        this.name = model.name;
     }
     update():void {
         document.getElementById("my-app").innerHTML =
@@ -23,28 +25,33 @@ class ViewGame implements Observer, Observable {
                     `<button id="scores">Scores</button>`+
                 `</div>`+
                 `<div id='button-start'><button id="start" ${!this.model.gameOver ? 'disabled': ''}>Go</button></div>`+
+                `<div>Your name</div>`+
+                `<div><input type="text" id="name" value="${this.model.name}" /></div>`+
+            `</div>`+
+            `<div>`+
+                `<h1>DryField</h1>`+
             `</div>`+
             `<div class='game-info-flex-container'>` +
                 `<div class='game-info-flex-item'> ${this.model.nbRecolte} Recolte </div>`+
-                `<div class='game-info-flex-item'> ${this.model.litreReserve} L </div>`+
+                `<div class='game-info-flex-item'> ${Math.round(this.model.litreReserve)} L </div>`+
                 `<div class='game-info-flex-item'> ${this.model.dollar} $ </div>`+
             `</div>`+
             `<div class='fields-flex-container'>` +
                 `<div class='fields-flex-item'>`+
                     `<div><button id="irriger0">Irriger</button></div>`+
-                    `<div>${this.model.fields[0].citerne.litreCiterne} L </div>`+
+                    `<div>${Math.round(this.model.fields[0].citerne.litreCiterne*10)/10} L </div>`+
                     `<div>${this.model.fields[0].recolte*5} % </div>`+
                     `<div><button id="recolter0">Récolter</button></div>`+
                 `</div>`+
                 `<div class='fields-flex-item'>`+
                     `<div><button id="irriger1">Irriger</button></div>`+
-                    `<div>${this.model.fields[1].citerne.litreCiterne} L </div>`+
+                    `<div>${Math.round(this.model.fields[1].citerne.litreCiterne*10)/10} L </div>`+
                      `<div>${this.model.fields[1].recolte*5} % </div>`+
                     `<div><button id="recolter1">Récolter</button></div>`+
                 `</div>`+
                 `<div class='fields-flex-item'>`+
                     `<div><button id="irriger2">Irriger</button></div>`+
-                    `<div>${this.model.fields[2].citerne.litreCiterne} L </div>`+
+                    `<div>${Math.round(this.model.fields[2].citerne.litreCiterne*10)/10} L </div>`+
                     `<div>${this.model.fields[2].recolte*5} % </div>`+
                     `<div><button id="recolter2">Récolter</button></div>`+
                 `</div>`+
@@ -54,6 +61,12 @@ class ViewGame implements Observer, Observable {
         document.getElementById("jouer").addEventListener("click", () => this.notifyObserver("jouer"), false);
         document.getElementById("scores").addEventListener("click", () => this.notifyObserver("scores"), false);
         document.getElementById("start").addEventListener("click", () => this.notifyObserver("start"), false);
+        document.getElementById("name").addEventListener("change",
+            () => {
+                this.name = (<HTMLInputElement>document.getElementById("name")).value;
+                this.notifyObserver("name");
+            }
+        );
         document.getElementById("irriger0").addEventListener("click", () => this.notifyObserver("irriger0"), false);
         document.getElementById("recolter0").addEventListener("click", () => this.notifyObserver("recolter0"), false);
         document.getElementById("irriger1").addEventListener("click", () => this.notifyObserver("irriger1"), false);

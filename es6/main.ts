@@ -19,4 +19,3 @@ modelGame.addObserver(viewGame);
 
 // we show the game view
 viewGame.update();
-
