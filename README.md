@@ -11,5 +11,6 @@ MVC Game using ES6 and TypeScript
           |                                 |    |
           |                                 |    |
           V                                 V    |
-        Model  - - - - - - - - - - - - - >   View
-                         notify
+        Model  <--------------------------    View
+               - - - - - - - - - - - - - >
+                         notyfy
